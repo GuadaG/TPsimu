@@ -28,15 +28,8 @@ class Simulacion(object):
 
     def inicializacion(self):
         self.Reloj=0
-        valid = False
-        while valid == False:
-            self.NroOperarios= int(input("Numero de operarios disponibles (entre 1 y 5): "))
-            if (self.NroOperarios<1) or (self.NroOperarios>5):
-                print("Opcion invalida")
-            else:
-                break
         for i in range(0, 5):
-            self.ListaDeEventos.append(valorExponencial(self.TMEntreRoturas))
+            self.ListaDeEventos.append(valorExponencial(self.TMArribos))
             self.Cola.append(99999.0)
         for k in range(0, 5):
             self.EstadoOperario.append('D')
