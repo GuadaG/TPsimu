@@ -4,6 +4,7 @@ import time
 from collections import deque
 from array import *
 import operator
+import csv
 
 
 
@@ -50,31 +51,31 @@ class Simulacion(object):
 
 
     def programaPrincipal(self):
-            self.inicializacion()
-            while self.Reloj<600:
-                self.tiempos()
-                if self.ProximoEvento == 0:
-                    self.arriboS1()
-                if self.ProximoEvento == 1:
-                    self.partidaS1()
-                if self.ProximoEvento == 2:
-                    self.arriboS2()
-                if self.ProximoEvento == 3:
-                    self.partidaS2()
-                if self.ProximoEvento == 4:
-                    self.arriboS3()
-                if self.ProximoEvento == 5:
-                    self.partidaS3()
-                if self.ProximoEvento == 6:
-                    self.arriboS4()
-                if self.ProximoEvento == 7:
-                    self.partidaS4()
-                if self.ProximoEvento == 8:
-                    self.arriboS5()
-                if self.ProximoEvento == 9:
-                    self.partidaS5()
+        self.inicializacion()
+        while self.Reloj < 600:
+            self.tiempos()
+            if self.ProximoEvento == 0:
+                self.arriboS1()
+            elif self.ProximoEvento == 1:
+                self.partidaS1()
+            elif self.ProximoEvento == 2:
+                self.arriboS2()
+            elif self.ProximoEvento == 3:
+                self.partidaS2()
+            elif self.ProximoEvento == 4:
+                self.arriboS3()
+            elif self.ProximoEvento == 5:
+                self.partidaS3()
+            elif self.ProximoEvento == 6:
+                self.arriboS4()
+            elif self.ProximoEvento == 7:
+                self.partidaS4()
+            elif self.ProximoEvento == 8:
+                self.arriboS5()
+            elif self.ProximoEvento == 9:
+                self.partidaS5()
 
-            self.reportes()
+        self.reportes()
 
 
     def tiempos(self):
@@ -85,19 +86,19 @@ class Simulacion(object):
         for i in range(0, 10):
             #print ("i  ", self.ListaDeEventos[i])
             #print ("menor  ", self.ListaDeEventos[self.Menor])
-            if self.ListaDeEventos[i] <= self.ListaDeEventos[self.Menor]:
+            if self.ListaDeEventos[i] < self.ListaDeEventos[self.Menor]:
                 self.Menor = i
         self.TiempoUltimoEvento = self.Reloj
         self.ProximoEvento = self.Menor
         self.Reloj = self.ListaDeEventos[self.Menor]
-        print (self.Menor)
+        # print (self.Menor)
 
 
 
     def arriboS1(self):
         self.ListaDeEventos[0] = valorExponencial(self.TMArribos) + self.Reloj
         if self.EstadoServidor[0] == 'D':
-            self.EstadoServidor[0] == 'O'
+            self.EstadoServidor[0] = 'O'
             self.CantClientesAtendidos[0] += 1
             self.ListaDeEventos[1] = valorExponencial(self.TMServidor1) + self.Reloj
         else:
@@ -113,7 +114,8 @@ class Simulacion(object):
             self.Cola1.pop(0)
             self.CantClientesAtendidos[0] += 1
         else:
-            self.EstadoServidor[0] == 'D'
+            self.EstadoServidor[0] = 'D'
+            self.ListaDeEventos[1] = 9999.999
         self.ListaDeEventos[2] = self.Reloj
         self.ListaDeEventos[4] = self.Reloj
         print ("arribo 2  ", self.ListaDeEventos[2])
@@ -122,8 +124,9 @@ class Simulacion(object):
 
     def arriboS2(self):
         if self.EstadoServidor[1] == 'D':
-            self.EstadoServidor[1] == 'O'
+            self.EstadoServidor[1] = 'O'
             self.CantClientesAtendidos[1] += 1
+            self.ListaDeEventos[2] = 9999.999
             self.ListaDeEventos[3] = valorExponencial(self.TMServidor2) + self.Reloj
         else:
             self.Cola2.append(self.Reloj)
@@ -138,14 +141,16 @@ class Simulacion(object):
             self.TamanioCola[1] -= 1
             self.CantClientesAtendidos[1] += 1
         else:
-            self.EstadoServidor[1] == 'D'
+            self.EstadoServidor[1] = 'D'
+            self.ListaDeEventos[3] = 9999.999
         self.ListaDeEventos[6] = self.Reloj
         self.Tipo = 'S'
 
 
     def arriboS3(self):
         if self.EstadoServidor[2] == 'D':
-            self.EstadoServidor[2] == 'O'
+            self.EstadoServidor[2] = 'O'
+            self.ListaDeEventos[4] = 9999.999
             self.ListaDeEventos[5] = valorExponencial(self.TMServidor3) + self.Reloj
             self.CantClientesAtendidos[2] += 1
         else:
@@ -161,7 +166,8 @@ class Simulacion(object):
             self.TamanioCola[2] -= 1
             self.CantClientesAtendidos[2] += 1
         else:
-            self.EstadoServidor[2] == 'D'
+            self.EstadoServidor[2] = 'D'
+            self.ListaDeEventos[5] = 9999.999
         self.ListaDeEventos[6] = self.Reloj
         self.Tipo = 'P'
 
@@ -169,8 +175,9 @@ class Simulacion(object):
     def arriboS4(self):
         if self.EstadoServidor[3] == 'D':
             if (self.TamanioCola[3]>0) and (self.TamanioCola[4]>0):
-                self.EstadoServidor[3] == 'O'
+                self.EstadoServidor[3] = 'O'
                 self.CantClientesAtendidos[3] += 1
+                self.ListaDeEventos[6] = 9999.999
                 if (random.rand(0, 1) < 0.12) or (random.rand(0, 1) < 0.1):
                     self.ListaDeEventos[7] = valorExponencial(self.TMServidor4d) + self.Reloj
                 else:
@@ -200,13 +207,15 @@ class Simulacion(object):
             self.TamanioCola[3] -= 1
             self.TamanioCola[4] -= 1
         else:
-            self.EstadoServidor[3] == 'D'
+            self.EstadoServidor[3] = 'D'
+            self.ListaDeEventos[7] = 9999.999
         self.ListaDeEventos[8] = self.Reloj
 
 
     def arriboS5(self):
         if self.EstadoServidor[4] == 'D':
-            self.EstadoServidor[4] == 'O'
+            self.EstadoServidor[4] = 'O'
+            self.ListaDeEventos[8] = 99999.999
             self.ListaDeEventos[9] = valorExponencial(self.TMServidor5) + self.Reloj
             self.CantClientesAtendidos[4] += 1
         else:
@@ -222,7 +231,8 @@ class Simulacion(object):
             self.TamanioCola[5] -= 1
             self.CantClientesAtendidos[4] += 1
         else:
-            self.EstadoServidor[2] == 'D'
+            self.EstadoServidor[2] = 'D'
+            self.ListaDeEventos[9] = 9999.999
 
 
     def reporte(self):
@@ -234,6 +244,8 @@ class Simulacion(object):
             salida.write('\n')
             self.TiempoTotalSistema += self.TiempoTotalServidor[i]/self.CantClientesAtendidos[i]
 
+
+##
 
 #---------------------------------------------
 # Funciones
